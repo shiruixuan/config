@@ -1,16 +1,43 @@
 {
+	"stats": {},
 	"log": {
 		"access": "/var/log/v2ray/access.log",
 		"error": "/var/log/v2ray/error.log",
 		"loglevel": "warning"
 	},
+	"api": {
+		"tag": "api",
+		"services": [
+			"HandlerService",
+			"LoggerService",
+			"StatsService"
+		]
+	},
+	"policy": {
+		"levels": {
+			"0": {
+				"statsUserUplink": true,
+				"statsUserDownlink": true
+			},
+			"1": {
+				"statsUserUplink": true,
+				"statsUserDownlink": true
+			}
+		},
+		"system": {
+			"statsInboundUplink": true,
+			"statsInboundDownlink": true
+		}
+	},
 	"inbounds": [
 		{
+			"tag": "user1",
 			"port": 29535,
 			"protocol": "vmess",
 			"settings": {
 				"clients": [
 					{
+						"email": "user1@mail.com",
 						"id": "a1521187-6faa-412d-861d-cccf29c6217f",
 						"level": 1,
 						"alterId": 0
@@ -43,6 +70,56 @@
 					"tls"
 				]
 			}
+		},
+		{
+			"tag": "user2",
+			"port": 29536,
+			"protocol": "vmess",
+			"settings": {
+				"clients": [
+					{
+						"email": "user2@mail.com",
+						"id": "a1521187-6faa-412d-861d-cccf29c6218f",
+						"level": 1,
+						"alterId": 0
+					}
+				]
+			},
+			"streamSettings": {
+				"network": "tcp",
+				"tcpSettings": {
+					"header": { // header 这一项是关于数据包伪装的设置，可自定义合理的内容，但要确保服务器与客户端一致
+						"type": "http",
+						"response": {
+							"version": "1.1",
+							"status": "200",
+							"reason": "OK",
+							"headers": {
+								"Content-Type": ["application/octet-stream", "application/x-msdownload", "text/html", "application/x-shockwave-flash"],
+								"Transfer-Encoding": ["chunked"],
+								"Connection": ["keep-alive"],
+								"Pragma": "no-cache"
+							}
+						}
+					}
+				}
+			},
+			"sniffing": {
+				"enabled": true,
+				"destOverride": [
+					"http",
+					"tls"
+				]
+			}
+		},
+		{
+			"listen": "127.0.0.1",
+			"port": 10085,
+			"protocol": "dokodemo-door",
+			"settings": {
+				"address": "127.0.0.1"
+			},
+			"tag": "api"
 		}
 		//include_ss
 		//include_socks
@@ -53,16 +130,13 @@
 	"outbounds": [
 		{
 			"protocol": "freedom",
-			"settings": {
-				"domainStrategy": "UseIP"
-			},
-			"tag": "direct"
+			"settings": {}
 		},
 		{
 			"protocol": "blackhole",
 			"settings": {},
 			"tag": "blocked"
-        }
+		}
 		//include_out_config
 		//
 	],
@@ -75,63 +149,27 @@
 		]
 	},
 	"routing": {
-		"domainStrategy": "IPOnDemand",	
-		"rules": [
-            {
-                "type": "field",
-                "ip": [
-                    "geoip:private"
-                ],
-                "outboundTag": "blocked"
-            }
-			,
-			{
-				"type": "field",
-				"domain": [
-					"domain:epochtimes.com",
-					"domain:epochtimes.com.tw",
-					"domain:epochtimes.fr",
-					"domain:epochtimes.de",
-					"domain:epochtimes.jp",
-					"domain:epochtimes.ru",
-					"domain:epochtimes.co.il",
-					"domain:epochtimes.co.kr",
-					"domain:epochtimes-romania.com",
-					"domain:erabaru.net",
-					"domain:lagranepoca.com",
-					"domain:theepochtimes.com",
-					"domain:ntdtv.com",
-					"domain:ntd.tv",
-					"domain:ntdtv-dc.com",
-					"domain:ntdtv.com.tw",
-					"domain:minghui.org",
-					"domain:renminbao.com",
-					"domain:dafahao.com",
-					"domain:dongtaiwang.com",
-					"domain:falundafa.org",
-					"domain:wujieliulan.com",
-					"domain:ninecommentaries.com",
-					"domain:shenyun.com"
-				],
-				"outboundTag": "blocked"
-			}			,
-                {
-                    "type": "field",
-                    "protocol": [
-                        "bittorrent"
-                    ],
-                    "outboundTag": "blocked"
-                }
-			//include_ban_ad
-			//include_rules
-			//
-		]
+		"settings": {
+			"rules": [
+				{
+					"inboundTag": [
+						"api"
+					],
+					"outboundTag": "api",
+					"type": "field"
+				}
+				//include_ban_ad
+				//include_rules
+				//
+			]
+		},
+		"strategy": "rules"
 	},
 	"transport": {
 		"kcpSettings": {
-            "uplinkCapacity": 100,
-            "downlinkCapacity": 100,
-            "congestion": true
-        }
+			"uplinkCapacity": 100,
+			"downlinkCapacity": 100,
+			"congestion": true
+		}
 	}
 }
