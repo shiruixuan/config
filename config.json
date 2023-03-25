@@ -31,7 +31,7 @@
 	},
 	"inbounds": [
 		{
-			"tag": "user1",
+			"tag": "group1",
 			"port": 29535,
 			"protocol": "vmess",
 			"settings": {
@@ -40,7 +40,13 @@
 						"email": "user1@mail.com",
 						"id": "a1521187-6faa-412d-861d-cccf29c6217f",
 						"level": 1,
-						"alterId": 0
+						"alterId": 64
+					},
+					{
+						"email": "user2@mail.com",
+						"id": "a1521187-6faa-412d-861d-cccf29c6218f",
+						"level": 1,
+						"alterId": 64
 					}
 				]
 			},
@@ -72,16 +78,22 @@
 			}
 		},
 		{
-			"tag": "user2",
+			"tag": "group2",
 			"port": 29536,
 			"protocol": "vmess",
 			"settings": {
 				"clients": [
 					{
-						"email": "user2@mail.com",
-						"id": "a1521187-6faa-412d-861d-cccf29c6218f",
+						"email": "user3@mail.com",
+						"id": "a1521187-6faa-412d-861d-cccf29c6215f",
 						"level": 1,
-						"alterId": 0
+						"alterId": 64
+					},
+					{
+						"email": "user4@mail.com",
+						"id": "a1521187-6faa-412d-861d-cccf29c6216f",
+						"level": 1,
+						"alterId": 64
 					}
 				]
 			},
